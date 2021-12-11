@@ -9,14 +9,19 @@ import figures.Figure;
 import figures.Square;
 import figures.Triangle;
 import graphics.GraphicCanvas;
+import graphics.Window;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 
-public class Main {
+public class Main extends JFrame {
     private static final File file = new File("figures.txt");
+
 
     private static final String mainMenu = "Выберете действие:\n" +
             "\n1. Вывести все фигуры\n" +
@@ -41,9 +46,9 @@ public class Main {
             figures = initializeStart();
         }
 
-        GraphicCanvas window = new GraphicCanvas(figures);
-
-        menu(figures);
+        Window window=new Window();
+        window.panel(figures);
+//        menu(figures);
 
 
     }
@@ -81,10 +86,13 @@ public class Main {
         }
     }
 
+
+
+
     public static void printFigures(ArrayList<Figure> figures) {
         int i = 1;
         for (Figure figure : figures) {
-            System.out.println("\n"+i + ". " + figure);
+            System.out.println("\n" + i + ". " + figure);
             i++;
         }
 
