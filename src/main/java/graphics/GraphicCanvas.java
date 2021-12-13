@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class GraphicCanvas extends Canvas {
+public class GraphicCanvas extends JPanel {
     private ArrayList<Figure> figures;
 
     public GraphicCanvas(ArrayList<Figure> figures) {

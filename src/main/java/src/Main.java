@@ -46,8 +46,12 @@ public class Main extends JFrame {
             figures = initializeStart();
         }
 
-        Window window=new Window();
-        window.panel(figures);
+        //для отрисовки графического окна
+        figures=new ArrayList<Figure>();
+        Window window=new Window(figures);
+
+
+window.setVisible(true);
 //        menu(figures);
 
 
