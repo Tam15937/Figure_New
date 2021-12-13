@@ -8,12 +8,9 @@ import figures.Circle;
 import figures.Figure;
 import figures.Square;
 import figures.Triangle;
-import graphics.GraphicCanvas;
 import graphics.Window;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,11 +44,11 @@ public class Main extends JFrame {
         }
 
         //для отрисовки графического окна
-        figures=new ArrayList<Figure>();
-        Window window=new Window(figures);
+        figures = new ArrayList<Figure>();
+        Window window = new Window(figures);
 
 
-window.setVisible(true);
+        window.setVisible(true);
 //        menu(figures);
 
 
@@ -89,8 +86,6 @@ window.setVisible(true);
             }
         }
     }
-
-
 
 
     public static void printFigures(ArrayList<Figure> figures) {
@@ -167,16 +162,18 @@ window.setVisible(true);
         Scanner in = new Scanner(System.in);
         int action = in.nextInt();
         switch (action) {
-            case 1 -> figureCreator = new CircleCreator();
-
-            case 2 -> figureCreator = new TriangleCreator();
-
-            case 3 -> figureCreator = new SquareCreator();
-
-            default -> {
+            case 1:
+                figureCreator = new CircleCreator();
+                break;
+            case 2:
+                figureCreator = new TriangleCreator();
+                break;
+            case 3:
+                figureCreator = new SquareCreator();
+                break;
+            default:
                 System.out.println("Не то значение, введите то что можно");
                 return selectFigure();
-            }
         }
 
         return figureCreator;
