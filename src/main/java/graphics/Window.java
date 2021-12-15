@@ -15,6 +15,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Window extends JFrame implements ActionListener {
@@ -26,7 +27,7 @@ public class Window extends JFrame implements ActionListener {
 
     private ArrayList<Figure> figures;
     GraphicCanvas graph;
-
+    public final static String removeButtonName="removePointButton";
     private Container contentPane;
     private SpringLayout layout;
 
@@ -248,7 +249,7 @@ public class Window extends JFrame implements ActionListener {
                 layout.getConstraints(addButtonComponents.get("newPointButton")).setY(Spring.constant(addButtonComponents.get("newPointButton").getY() + 50));
                 layout.getConstraints(addButtonComponents.get("doneButton")).setY(Spring.constant(addButtonComponents.get("doneButton").getY() + 50));
 
-                addButtonComponents.put("removePointButton"+id, removePointButton);
+                addButtonComponents.put(removeButtonName+id, removePointButton);
                 addButtonComponents.put("Xlabel"+id, Xlabel);
                 addButtonComponents.put("Ylabel"+id, Ylabel);
                 addButtonComponents.put("Xtext"+id, Xtext);
@@ -355,6 +356,23 @@ public class Window extends JFrame implements ActionListener {
                     }
                 }
                 else {JOptionPane.showMessageDialog(new Frame("Оповещение"), "Введите координаты фигуры правильно!\n координаты X и Y, должны быть целыми числами!");}
+            }
+            else if (event.getActionCommand().equals("-")) {
+                for(Map.Entry<String,JComponent> component: addButtonComponents.entrySet()){
+                    if(component.getValue() instanceof JButton){
+                        if(component.getValue().equals(event.getSource())) {
+                            String key = component.getKey();
+
+                            int id = Integer.valueOf(key.substring(key.indexOf(removeButtonName) + removeButtonName.length()))-1;
+
+                        }
+                    }
+                }
+
+
+
+                revalidate();
+                repaint();
             }
         }
 
