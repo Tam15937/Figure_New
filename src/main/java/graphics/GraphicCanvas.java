@@ -9,62 +9,92 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class GraphicCanvas extends JPanel {
-	private ArrayList<Figure> figures;
+    private ArrayList<Figure> figures;
 
-	public GraphicCanvas(ArrayList<Figure> figures) {
-		super();
-		this.figures = figures;
-		this.setSize(500, 500);
-	}
+    public int multiplierX;
+    public int multiplierY;
+
+    public GraphicCanvas(ArrayList<Figure> figures) {
+        super();
+        this.figures = figures;
+        this.setSize(500, 500);
+    }
 
     @Override
-	public void paintComponent(Graphics g) {
+    public void paintComponent(Graphics g) {
 
-		int graphSizeX = g.getClipBounds().height;
-		int graphSizeY = g.getClipBounds().width;
-		g.drawRect(0, 1, graphSizeX - 1, graphSizeY - 2);
-		g.drawLine(graphSizeX / 2, 0, graphSizeX / 2, graphSizeY);
-		g.drawLine(0, graphSizeY / 2, graphSizeX, graphSizeY / 2);
+        int graphSizeX = g.getClipBounds().height;
+        int graphSizeY = g.getClipBounds().width;
+        g.drawRect(0, 1, graphSizeX - 1, graphSizeY - 2);
+        g.drawLine(graphSizeX / 2, 0, graphSizeX / 2, graphSizeY);
+        g.drawLine(0, graphSizeY / 2, graphSizeX, graphSizeY / 2);
 
-		for (Figure figure : figures) {
-			if (figure instanceof Circle) {
-				Circle circle = (Circle) figure;
-				src.Point center = circle.getCenter();
-				int radius = (int) circle.radius;
-				int x = (int) center.getX() - radius + graphSizeX / 2;
-				int y = (int) center.getY() - radius + graphSizeY / 2;
-				int width = 2 * radius;
-				int height = 2 * radius;
-				g.drawOval(x, -y,width ,height );
-			} else {
-				for (int i = 0; i < figure.getPoints().size() - 1; i++) {
-					src.Point first = figure.getPoints().get(i);
-					src.Point second = figure.getPoints().get(i + 1);
-					int x1=(int) first.getX() + graphSizeX / 2;
-					int y1=(int) first.getY() + graphSizeY / 2;
-					int x2=(int) second.getX() + graphSizeX / 2;
-					int y2=(int) second.getY() + graphSizeY / 2;
-					g.drawLine(x1, y1, x2, y2);
+        if (figures.size() > 0) {
+            double minX = figures.get(0).getPoints().get(0).getX();
+            double minY = figures.get(0).getPoints().get(0).getY();
+            double maxX = figures.get(0).getPoints().get(0).getX();
+            double maxY = figures.get(0).getPoints().get(0).getY();
+            for (Figure figure : figures) {
+                if (figure instanceof Circle) {
 
-				}
-				src.Point first = figure.getPoints().get(figure.getPoints().size() - 1);
-				Point second = figure.getPoints().get(0);
-				int x1=(int) first.getX() + graphSizeX / 2;
-				int y1=(int) first.getY() + graphSizeY / 2;
-				int x2=(int) second.getX() + graphSizeX / 2;
-				int y2=(int) second.getY() + graphSizeY / 2;
-				g.drawLine(x1,y1 ,x2 ,y2 );
-			}
-		}
-	}
+                    if (figure.getCenter().getX() - ((Circle) figure).radius < minX) minX = figure.getCenter().getX() - ((Circle) figure).getRadius();
+
+                    if (figure.getCenter().getX() + ((Circle) figure).radius > maxX) maxX = figure.getCenter().getX() + ((Circle) figure).getRadius();
+
+                    if (figure.getCenter().getY() - ((Circle) figure).radius < minY) minY = figure.getCenter().getY() - ((Circle) figure).getRadius();
+
+                    if (figure.getCenter().getY() + ((Circle) figure).radius > maxY) maxY = figure.getCenter().getY() + ((Circle) figure).getRadius();
+                } else {
+                    for (Point point : figure.getPoints()) {
+                        if (point.getX() < minX) minX = point.getX();
+                        if (point.getX() > maxX) maxX = point.getX();
+                        if (point.getY() < minY) minY = point.getY();
+                        if (point.getY() > maxY) maxY = point.getY();
+                    }
+                }
+            }
+            multiplierX = (int) (this.getWidth() * 0.5 / Math.max(Math.abs(maxX), Math.abs(minX)));
+            multiplierY = (int) (this.getHeight() * 0.5 / Math.max(Math.abs(maxY), Math.abs(minY)));
 
 
-	//TODO сделать масштабирование фигур , а так же повернуть график на 90 градусов против часовой стрелки
+            for (Figure figure : figures) {
+                if (figure instanceof Circle) {
+                    int multiplier = Math.max(multiplierX, multiplierY);
+                    Circle circle = (Circle) figure;
+                    Point center = circle.getCenter();
+                    int radius = (int) circle.radius;
+                    int x = (int) center.getX() * multiplierX - radius * multiplierX  + graphSizeX / 2;
+                    int y = (int) -center.getY() * multiplierY- radius * multiplierX + graphSizeY / 2;
+                    int width = 2 * radius * multiplier;
+                    int height = 2 * radius * multiplier;
+                    g.drawOval(x, y, width, height);
+                } else {
+                    for (int i = 0; i < figure.getPoints().size() - 1; i++) {
+                        Point first = figure.getPoints().get(i);
+                        Point second = figure.getPoints().get(i + 1);
+                        int x1 = (int) first.getX() * multiplierX + graphSizeX / 2;
+                        int y1 = (int) -first.getY() * multiplierY + graphSizeY / 2;
+                        int x2 = (int) second.getX() * multiplierX + graphSizeX / 2;
+                        int y2 = (int) -second.getY() * multiplierY + graphSizeY / 2;
+                        g.drawLine(x1, y1, x2, y2);
 
-	public void repaintGraphics(ArrayList<Figure> figures) {
-		this.figures = figures;
-		this.repaint();
-	}
+                    }
+                    Point first = figure.getPoints().get(figure.getPoints().size() - 1);
+                    Point second = figure.getPoints().get(0);
+                    int x1 = (int) first.getX() * multiplierX + graphSizeX / 2;
+                    int y1 = (int) -first.getY() * multiplierY + graphSizeY / 2;
+                    int x2 = (int) second.getX() * multiplierX + graphSizeX / 2;
+                    int y2 = (int) -second.getY() * multiplierY + graphSizeY / 2;
+                    g.drawLine(x1, y1, x2, y2);
+                }
+            }
+        }
 
+    }
+    //TODO сделать масштабирование фигур , а так же повернуть график на 90 градусов против часовой стрелки
 
+    public void repaintGraphics(ArrayList<Figure> figures) {
+        this.figures = figures;
+        this.repaint();
+    }
 }

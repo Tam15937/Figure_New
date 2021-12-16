@@ -18,7 +18,9 @@ public class Circle extends Figure {
         calculatePerimetr();
 
     }
-
+public double getRadius(){
+        return radius;
+}
     public void calculateRadius() {
         this.radius = calculateSide(points.get(0), points.get(1));
     }
