@@ -77,6 +77,11 @@ public double getRadius(){
     }
 
     @Override
+    public boolean containPoint(int x, int y, double multiplierX, double multiplierY) {
+        return false;
+    }
+
+    @Override
     //TODO
     // не правильный поворот фигуры
     public void rotate(double angle) {

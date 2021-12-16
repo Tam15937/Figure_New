@@ -111,4 +111,6 @@ public abstract class Figure implements IMovable, IRotateble, IScaleble , Serial
     public double getPerimetr() {
         return perimetr;
     }
+
+    public abstract boolean containPoint (int x, int y, double  multiplierX, double multiplierY);
 }

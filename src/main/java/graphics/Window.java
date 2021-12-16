@@ -9,13 +9,11 @@ import src.Point;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Window extends JFrame implements ActionListener {
 
@@ -23,6 +21,11 @@ public class Window extends JFrame implements ActionListener {
 
     private HashMap<String, HashMap<String, JComponent>> components;
     private HashMap<String, JComponent> addButtonComponents;
+    private HashMap<String, JComponent> changeButtonComponents;
+
+    Figure activeFigure = null;
+    boolean chooseFigureAvailable = false;
+
 
     private ArrayList<Figure> figures;
     private GraphicCanvas graph;
@@ -37,12 +40,19 @@ public class Window extends JFrame implements ActionListener {
     private Container contentPane;
     private SpringLayout layout;
 
+    int windowSizeWidth = this.getWidth();
+    int windowSizeHeight=this.getHeight();
+
+    int componentsWidth=windowSizeWidth/40;
+    int componentsHeight=windowSizeHeight/40;
+
     public Window(ArrayList<Figure> figures) {
         super("Программа");
         Dimension screen = this.getToolkit().getScreenSize();
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        this.setSize(screen.width * 3 / 4, screen.height * 3 / 4);
-        this.setSize(1800, 1000);
+        this.setSize(screen.width * 3 / 4, screen.height * 3 / 4);
+
+//        this.setSize(1800, 1000);
         this.getContentPane().setBackground(Color.WHITE);
         this.setLocationRelativeTo(null);
 //        this.setUndecorated(true);
@@ -50,6 +60,7 @@ public class Window extends JFrame implements ActionListener {
         components = new HashMap<>();
         this.figures = figures;
         graph = new GraphicCanvas(figures);
+
         contentPane = this.getContentPane();
         layout = new SpringLayout();
         addButtonComponents = new HashMap<>();
@@ -70,52 +81,107 @@ public class Window extends JFrame implements ActionListener {
         contentPane.setLayout(layout);
 
         graph.setBackground(Color.pink);
-        layout.getConstraints(graph).setX(Spring.constant(50));
-        layout.getConstraints(graph).setY(Spring.constant(50));
+        layout.getConstraints(graph).setX(Spring.constant(componentsWidth));
+        layout.getConstraints(graph).setY(Spring.constant(componentsHeight));
         layout.getConstraints(graph).setHeight(Spring.constant(750));
         layout.getConstraints(graph).setWidth(Spring.constant(750));
         contentPane.add(graph);
 
-        JButton addButton = new JButton("Создать фигуру");
+        graph.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                int x = (int) ((event.getX()-graph.getWidth() /2) / graph.multiplierX);
+                int y = (int)(-(event.getY()-graph.getHeight() /2) / graph.multiplierY);
+                JOptionPane.showMessageDialog(new Frame("Оповещение"), "x = " + x + " y =" + y);
+                activeFigure = defineFigureByCursor(x, y, graph.multiplierX, graph.multiplierY, figures);
+                if (chooseFigureAvailable && activeFigure != null) {
+                    JOptionPane.showMessageDialog(new Frame("Оповещение"), "Фигура успешно выбрана!");
+                    graph.repaintGraphics(new ArrayList<>() {{
+                        add(1, activeFigure);
+                    }});
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+
+    JButton addButton = new JButton("Создать фигуру");
         addButton.addActionListener(this);
 
-        JButton changeButton = new JButton("Изменить фигуру");
+    JButton changeButton = new JButton("Изменить фигуру");
         changeButton.addActionListener(this);
 
-        JButton deleteButton = new JButton("Удалить фигуру");
+    JButton deleteButton = new JButton("Удалить фигуру");
         deleteButton.addActionListener(this);
 
-        JButton exitButton = new JButton("Назад");
+    JButton exitButton = new JButton("Назад");
         exitButton.addActionListener(this);
 
         addButton.setBackground(Color.yellow);
-        layout.getConstraints(addButton).setHeight(Spring.constant(25));
-        layout.getConstraints(addButton).setWidth(Spring.constant(200));
-        layout.putConstraint(SpringLayout.WEST, addButton, 100, SpringLayout.EAST, graph);
+        layout.getConstraints(addButton).
+
+    setHeight(Spring.constant(25));
+        layout.getConstraints(addButton).
+
+    setWidth(Spring.constant(200));
+        layout.putConstraint(SpringLayout.WEST,addButton,100,SpringLayout.EAST,graph);
         contentPane.add(addButton);
 
         changeButton.setBackground(Color.cyan);
-        layout.getConstraints(changeButton).setHeight(Spring.constant(25));
-        layout.getConstraints(changeButton).setWidth(Spring.constant(200));
-        layout.putConstraint(SpringLayout.WEST, changeButton, 100, SpringLayout.EAST, addButton);
+        layout.getConstraints(changeButton).
+
+    setHeight(Spring.constant(25));
+        layout.getConstraints(changeButton).
+
+    setWidth(Spring.constant(200));
+        layout.putConstraint(SpringLayout.WEST,changeButton,100,SpringLayout.EAST,addButton);
         contentPane.add(changeButton);
 
         deleteButton.setBackground(Color.green);
-        layout.getConstraints(deleteButton).setHeight(Spring.constant(25));
-        layout.getConstraints(deleteButton).setWidth(Spring.constant(200));
-        layout.putConstraint(SpringLayout.WEST, deleteButton, 100, SpringLayout.EAST, changeButton);
+        layout.getConstraints(deleteButton).
+
+    setHeight(Spring.constant(25));
+        layout.getConstraints(deleteButton).
+
+    setWidth(Spring.constant(200));
+        layout.putConstraint(SpringLayout.WEST,deleteButton,100,SpringLayout.EAST,changeButton);
         contentPane.add(deleteButton);
 
-        HashMap<String, JComponent> mainButtons = new HashMap<>();
-        mainButtons.put("addButton", addButton);
-        mainButtons.put("changeButton", changeButton);
-        mainButtons.put("deleteButton", deleteButton);
-        mainButtons.put("exitButton", exitButton);
-        components.put("mainButtons", mainButtons);
+    HashMap<String, JComponent> mainButtons = new HashMap<>();
+        mainButtons.put("addButton",addButton);
+        mainButtons.put("changeButton",changeButton);
+        mainButtons.put("deleteButton",deleteButton);
+        mainButtons.put("exitButton",exitButton);
+        components.put("mainButtons",mainButtons);
 
-        this.revalidate();
-        this.repaint();
+        this.
 
+    revalidate();
+        this.
+
+    repaint();
+
+}
+
+    public Figure defineFigureByCursor(int x, int y, double multiplierX, double multiplierY, ArrayList<Figure> figures) {
+        for (Figure figure : figures) {
+            if (figure.containPoint(x, y, multiplierX, multiplierY)) return figure;
+        }
+        return null;
     }
 
     @Override
@@ -195,14 +261,26 @@ public class Window extends JFrame implements ActionListener {
 
 
                 this.revalidate();
-                this.repaint();
             }
-			else if(event.getSource().equals(components.get("mainButtons").get("deleteButton"))){
+            else if (event.getSource().equals(components.get("mainButtons").get("changeButton"))){
 
-			}
+            }
+            else if (event.getSource().equals(components.get("mainButtons").get("deleteButton"))) {
+
+
+                if (this.chooseFigureAvailable) {
+
+                    figures.remove(activeFigure);
+                    this.repaint();
+                } else {
+                    JOptionPane.showMessageDialog(new Frame("Оповещение"), "Ошибка!");
+                }
+
+                this.revalidate();
+            }
         }
-		else if (addButtonComponents.containsValue(event.getSource())) {
 
+        else if (addButtonComponents.containsValue(event.getSource())) {
             if (event.getSource().equals(addButtonComponents.get("newPointButton"))) {
 
                 String id = ((JLabel) (addButtonComponents.get("currentRowId"))).getText();
@@ -269,7 +347,7 @@ public class Window extends JFrame implements ActionListener {
                 this.revalidate();
 
             }
-			else if (event.getSource().equals(addButtonComponents.get("doneButton"))) {
+            else if (event.getSource().equals(addButtonComponents.get("doneButton"))) {
                 boolean flag = true;
                 for (int i = 1; i <= Integer.valueOf(((JLabel) (addButtonComponents.get("currentRowId"))).getText()); i++) {
 
@@ -353,7 +431,7 @@ public class Window extends JFrame implements ActionListener {
                 this.revalidate();
                 this.repaint();
             }
-			else if (event.getActionCommand().equals("-")) {
+            else if (event.getActionCommand().equals("-")) {
 
                 for (Map.Entry<String, JComponent> component : addButtonComponents.entrySet()) {
                     if (component.getValue() instanceof JButton) {
@@ -404,6 +482,7 @@ public class Window extends JFrame implements ActionListener {
             }
 
         }
+
     }
 
 }
