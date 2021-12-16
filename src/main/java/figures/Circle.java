@@ -78,7 +78,10 @@ public double getRadius(){
 
     @Override
     public boolean containPoint(int x, int y, double multiplierX, double multiplierY) {
-        return false;
+        double multiplier = Math.min(multiplierX, multiplierY);
+        double distance  = Math.sqrt(Math.pow(x - center.getX()*multiplierX, 2)
+                + Math.pow(y - center.getY()*multiplierY, 2));
+        return (Math.abs(radius* multiplier-distance)<2);
     }
 
     @Override
