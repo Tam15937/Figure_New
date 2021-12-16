@@ -60,6 +60,7 @@ public class Window extends JFrame implements ActionListener {
         contentPane = this.getContentPane();
         layout = new SpringLayout();
         addButtonComponents = new HashMap<>();
+        changeButtonComponents = new HashMap<>();
         deleteButtonComponents = new HashMap<>();
         panel();
         addComponentListener(new ComponentAdapter() {
@@ -89,14 +90,16 @@ public class Window extends JFrame implements ActionListener {
         graph.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent event) {
+//                contentPane.get;
                 int x = (int) ((event.getX() - graph.getWidth() / 2) / graph.multiplierX);
                 int y = (int) (-(event.getY() - graph.getHeight() / 2) / graph.multiplierY);
                 JOptionPane.showMessageDialog(new Frame("Оповещение"), "x = " + x + " y =" + y);
                 activeFigure = defineFigureByCursor(x, y, graph.multiplierX, graph.multiplierY, figures);
                 if (chooseFigureAvailable && activeFigure != null) {
-                    JOptionPane.showMessageDialog(new Frame("Оповещение"), "Фигура успешно выбрана!");
-                    graph.repaintGraphics(new ArrayList<>() {{
-                        add(1, activeFigure);
+                    JOptionPane.showMessageDialog(new Frame("Оповещение"), "Фигура выбрана");
+                    graph.repaintGraphics(new ArrayList<Figure>(figures) {{
+                        add(activeFigure);
+                        repaint();
                     }});
                     JLabel areaParameter = new JLabel("Площадь фигуры = " + activeFigure.getArea());
                     JLabel perimetrParametr = new JLabel("Периметр фигуры = " + activeFigure.getPerimetr());
@@ -104,9 +107,21 @@ public class Window extends JFrame implements ActionListener {
 
                     areaParameter.setBackground(Color.WHITE);
                     layout.getConstraints(areaParameter).setHeight(Spring.constant(space));
-                    layout.putConstraint(SpringLayout.NORTH, areaParameter, space, SpringLayout.SOUTH, graph);
+                    layout.putConstraint(SpringLayout.NORTH, areaParameter, space / 2, SpringLayout.SOUTH, graph);
                     layout.putConstraint(SpringLayout.WEST, areaParameter, space, SpringLayout.WEST, graph);
                     contentPane.add(areaParameter);
+
+                    perimetrParametr.setBackground(Color.WHITE);
+                    layout.getConstraints(perimetrParametr).setHeight(Spring.constant(space));
+                    layout.putConstraint(SpringLayout.NORTH, perimetrParametr, space / 2, SpringLayout.SOUTH, areaParameter);
+                    layout.putConstraint(SpringLayout.WEST, perimetrParametr, space, SpringLayout.WEST, graph);
+                    contentPane.add(perimetrParametr);
+
+                    centerParametr.setBackground(Color.WHITE);
+                    layout.getConstraints(centerParametr).setHeight(Spring.constant(space));
+                    layout.putConstraint(SpringLayout.NORTH, centerParametr, space / 2, SpringLayout.SOUTH, perimetrParametr);
+                    layout.putConstraint(SpringLayout.WEST, centerParametr, space, SpringLayout.WEST, graph);
+                    contentPane.add(centerParametr);
                     revalidate();
                 }
             }
@@ -166,12 +181,8 @@ public class Window extends JFrame implements ActionListener {
         mainButtons.put("exitButton", exitButton);
         components.put("mainButtons", mainButtons);
 
-        this.
-
-                revalidate();
-        this.
-
-                repaint();
+        this.revalidate();
+        this.repaint();
 
     }
 
@@ -262,11 +273,107 @@ public class Window extends JFrame implements ActionListener {
 
 
                 this.revalidate();
-            }
-            else if (event.getSource().equals(components.get("mainButtons").get("changeButton"))) {
+            } else if (event.getSource().equals(components.get("mainButtons").get("changeButton"))) {
 
-            }
-            else if (event.getSource().equals(components.get("mainButtons").get("deleteButton"))) {
+
+                chooseFigureAvailable = true;
+
+                JButton moveButton = new JButton("Переместить");
+                moveButton.addActionListener(this);
+
+                JButton rotateButton = new JButton("Повернуть");
+                rotateButton.addActionListener(this);
+
+                JButton scaleButton = new JButton("Масштабировать");
+                scaleButton.addActionListener(this);
+
+                JLabel Xlabel = new JLabel("X= ");
+                JLabel Ylabel = new JLabel("Y= ");
+                JTextField Xtext = new JTextField();
+                JTextField Ytext = new JTextField();
+                JTextField rotateText = new JTextField();
+                JTextField scaleText = new JTextField();
+
+                int space = screen.width * 5 / 384;// 25
+
+                Xlabel.setBackground(Color.cyan);
+                layout.getConstraints(Xlabel).setHeight(Spring.constant(space));
+                layout.getConstraints(Xlabel).setWidth(Spring.constant(space));
+                layout.putConstraint(SpringLayout.NORTH, Xlabel, space, SpringLayout.SOUTH, components.get("mainButtons").get("changeButton"));
+                layout.putConstraint(SpringLayout.WEST, Xlabel, 0, SpringLayout.WEST, components.get("mainButtons").get("changeButton"));
+                contentPane.add(Xlabel);
+
+                Xtext.setBackground(Color.cyan);
+                layout.getConstraints(Xtext).setHeight(Spring.constant(space));
+                layout.getConstraints(Xtext).setWidth(Spring.constant(space));
+                layout.putConstraint(SpringLayout.WEST, Xtext, 0, SpringLayout.EAST, Xlabel);
+                layout.putConstraint(SpringLayout.NORTH, Xtext, space, SpringLayout.SOUTH, components.get("mainButtons").get("changeButton"));
+                contentPane.add(Xtext);
+
+                Ylabel.setBackground(Color.cyan);
+                layout.getConstraints(Ylabel).setHeight(Spring.constant(space));
+                layout.getConstraints(Ylabel).setWidth(Spring.constant(space));
+                layout.putConstraint(SpringLayout.NORTH, Ylabel, space, SpringLayout.SOUTH, components.get("mainButtons").get("changeButton"));
+                layout.putConstraint(SpringLayout.WEST, Ylabel, space / 2, SpringLayout.EAST, Xtext);
+                contentPane.add(Ylabel);
+
+                Ytext.setBackground(Color.cyan);
+                layout.getConstraints(Ytext).setHeight(Spring.constant(space));
+                layout.getConstraints(Ytext).setWidth(Spring.constant(space));
+                layout.putConstraint(SpringLayout.WEST, Ytext, 0, SpringLayout.EAST, Ylabel);
+                layout.putConstraint(SpringLayout.NORTH, Ytext, space, SpringLayout.SOUTH, components.get("mainButtons").get("changeButton"));
+                contentPane.add(Ytext);
+
+                moveButton.setBackground(Color.cyan);
+                layout.getConstraints(moveButton).setHeight(Spring.constant(space));
+                layout.getConstraints(moveButton).setWidth(Spring.constant(space * 5));
+                layout.putConstraint(SpringLayout.WEST, moveButton, space / 2, SpringLayout.EAST, Ytext);
+                layout.putConstraint(SpringLayout.NORTH, moveButton, space, SpringLayout.SOUTH, components.get("mainButtons").get("changeButton"));
+                contentPane.add(moveButton);
+
+                rotateButton.setBackground(Color.cyan);
+                layout.getConstraints(rotateButton).setHeight(Spring.constant(space));
+                layout.getConstraints(rotateButton).setWidth(Spring.constant(space * 5));
+                layout.putConstraint(SpringLayout.NORTH, rotateButton, space, SpringLayout.SOUTH, moveButton);
+                layout.putConstraint(SpringLayout.EAST, rotateButton, 0, SpringLayout.EAST, moveButton);
+                contentPane.add(rotateButton);
+
+                rotateText.setBackground(Color.cyan);
+                layout.getConstraints(rotateText).setHeight(Spring.constant(space));
+                layout.getConstraints(rotateText).setWidth(Spring.constant(space * 2));
+                layout.putConstraint(SpringLayout.EAST, rotateText, 0, SpringLayout.EAST, Ytext);
+                layout.putConstraint(SpringLayout.NORTH, rotateText, 0, SpringLayout.NORTH, rotateButton);
+                contentPane.add(rotateText);
+
+
+                scaleButton.setBackground(Color.cyan);
+                layout.getConstraints(scaleButton).setHeight(Spring.constant(space));
+                layout.getConstraints(scaleButton).setWidth(Spring.constant(space * 5));
+                layout.putConstraint(SpringLayout.NORTH, scaleButton, space, SpringLayout.SOUTH, rotateButton);
+                layout.putConstraint(SpringLayout.EAST, scaleButton, 0, SpringLayout.EAST, rotateButton);
+                contentPane.add(scaleButton);
+
+                scaleText.setBackground(Color.cyan);
+                layout.getConstraints(scaleText).setHeight(Spring.constant(space));
+                layout.getConstraints(scaleText).setWidth(Spring.constant(space * 2));
+                layout.putConstraint(SpringLayout.EAST, scaleText, 0, SpringLayout.EAST, Ytext);
+                layout.putConstraint(SpringLayout.NORTH, scaleText, 0, SpringLayout.NORTH, scaleButton);
+                contentPane.add(scaleText);
+
+                changeButtonComponents.put("Xtext", Xtext);
+                changeButtonComponents.put("Ytext", Ytext);
+                changeButtonComponents.put("Xlabel", Xlabel);
+                changeButtonComponents.put("Ylabel", Ylabel);
+                changeButtonComponents.put("moveButton", moveButton);
+                changeButtonComponents.put("rotateButton", rotateButton);
+                changeButtonComponents.put("rotateText", rotateText);
+                changeButtonComponents.put("scaleButton", scaleButton);
+                changeButtonComponents.put("scaleText", scaleText);
+
+                components.put("changeButtonComponents", changeButtonComponents);
+
+                this.revalidate();
+            } else if (event.getSource().equals(components.get("mainButtons").get("deleteButton"))) {
 
                 int space = screen.width * 5 / 384;// 25
 
@@ -286,8 +393,11 @@ public class Window extends JFrame implements ActionListener {
                 components.put("deleteButtonComponents", deleteButtonComponents);
                 this.revalidate();
             }
-        }
-        else if (addButtonComponents.containsValue(event.getSource())) {
+
+
+        } else if (addButtonComponents.containsValue(event.getSource())) {
+
+
             if (event.getSource().equals(addButtonComponents.get("newPointButton"))) {
 
                 int space = screen.width * 5 / 384;// 25
@@ -359,8 +469,12 @@ public class Window extends JFrame implements ActionListener {
                 this.revalidate();
 
             } else if (event.getSource().equals(addButtonComponents.get("doneButton"))) {
+
+
                 boolean flag = true;
+
                 for (int i = 1; i <= Integer.valueOf(((JLabel) (addButtonComponents.get("currentRowId"))).getText()); i++) {
+
                     try {
                         if (addButtonComponents.containsKey("Xtext" + i)) {
                             if (addButtonComponents.get("Xtext" + i).isEnabled()) {
@@ -374,7 +488,9 @@ public class Window extends JFrame implements ActionListener {
                         addButtonComponents.get("Xtext" + i).setBackground(Color.pink);
                         this.revalidate();
                     }
+
                 }
+
                 for (int i = 1; i <= Integer.valueOf(((JLabel) (addButtonComponents.get("currentRowId"))).getText()); i++) {
 
                     try {
@@ -436,9 +552,9 @@ public class Window extends JFrame implements ActionListener {
                             component.setEnabled(true);
                             contentPane.remove(component);
                         }
-
                         addButtonComponents.clear();
                         graph.repaintGraphics(figures);
+
                         //	JOptionPane.showMessageDialog(new Frame("Оповещение"), "Фигура готова!");
                     }
                 } else {
@@ -496,14 +612,172 @@ public class Window extends JFrame implements ActionListener {
 
             }
 
-        }
-        else if (deleteButtonComponents.containsValue(event.getSource())) {
+        } else if (deleteButtonComponents.containsValue(event.getSource())) {
             if (event.getSource().equals(deleteButtonComponents.get("delete"))) {
-                JOptionPane.showMessageDialog(new Frame("Оповещение"), "бум");
+//                JOptionPane.showMessageDialog(new Frame("Оповещение"), "бум");
                 figures.remove(activeFigure);
+                graph.repaintGraphics(figures);
+
+                for (JComponent component : deleteButtonComponents.values()) {
+                    component.setEnabled(true);
+                    contentPane.remove(component);
+                }
+                deleteButtonComponents.clear();
+
+                chooseFigureAvailable = false;
+                this.revalidate();
                 this.repaint();
             }
         }
+
+
+        else if (changeButtonComponents.containsValue(event.getSource())) {
+
+
+            if (event.getSource().equals(changeButtonComponents.get("moveButton"))) {
+
+
+                boolean flag = true;
+                Point point = null;
+                try {
+                    if (changeButtonComponents.containsKey("Xtext")) {
+                        double x = Double.parseDouble(((JTextField) (changeButtonComponents.get("Xtext"))).getText());
+                        changeButtonComponents.get("Xtext").setBackground(Color.cyan);
+                    }
+                } catch (NumberFormatException numb) {
+                    flag = false;
+                    changeButtonComponents.get("Xtext").setBackground(Color.pink);
+                    this.revalidate();
+                }
+
+                try {
+                    if (changeButtonComponents.containsKey("Ytext")) {
+                        double x = Double.parseDouble(((JTextField) (changeButtonComponents.get("Ytext"))).getText());
+                        changeButtonComponents.get("Ytext").setBackground(Color.cyan);
+                    }
+                } catch (NumberFormatException numb) {
+                    flag = false;
+                    changeButtonComponents.get("Ytext").setBackground(Color.pink);
+                    this.revalidate();
+                }
+
+
+                if (flag) {
+                    if (changeButtonComponents.containsKey("Xtext") || changeButtonComponents.containsKey("Ytext")) {
+
+                        double x = Double.parseDouble(((JTextField) (changeButtonComponents.get("Xtext"))).getText());
+                        double y = Double.parseDouble(((JTextField) (changeButtonComponents.get("Ytext"))).getText());
+                        point = new Point(x, y);
+                    }
+                }
+
+
+                activeFigure.move(point);
+
+
+                for (JComponent component : changeButtonComponents.values()) {
+                    component.setEnabled(true);
+                    contentPane.remove(component);
+                }
+                changeButtonComponents.clear();
+
+
+                chooseFigureAvailable = false;
+                this.revalidate();
+                this.repaint();
+
+            }
+
+
+            else if (event.getSource().equals(changeButtonComponents.get("rotateButton"))) {
+                boolean flag = true;
+                double x=0;
+                try {
+                    if (changeButtonComponents.containsKey("rotateText")) {
+                        x = Double.parseDouble(((JTextField) (changeButtonComponents.get("rotateText"))).getText());
+                        changeButtonComponents.get("rotateText").setBackground(Color.cyan);
+                    }
+                } catch (NumberFormatException numb) {
+                    flag = false;
+                    changeButtonComponents.get("rotateText").setBackground(Color.pink);
+                    this.revalidate();
+                }
+
+
+
+
+
+                if (flag) {
+                    if (changeButtonComponents.containsKey("rotateText")) {
+
+                        x = Double.parseDouble(((JTextField) (changeButtonComponents.get("rotateText"))).getText());
+
+                    }
+                }
+
+
+                activeFigure.rotate(x);
+
+
+
+                for (JComponent component : changeButtonComponents.values()) {
+                    component.setEnabled(true);
+                    contentPane.remove(component);
+                }
+                changeButtonComponents.clear();
+
+
+                chooseFigureAvailable = false;
+                this.revalidate();
+                this.repaint();
+
+            }
+
+
+            else if (event.getSource().equals(changeButtonComponents.get("scaleButton"))) {
+                boolean flag = true;
+                double x=0;
+                try {
+                    if (changeButtonComponents.containsKey("scaleText")) {
+                        x = Double.parseDouble(((JTextField) (changeButtonComponents.get("scaleText"))).getText());
+                        changeButtonComponents.get("scaleText").setBackground(Color.cyan);
+                    }
+                } catch (NumberFormatException numb) {
+                    flag = false;
+                    changeButtonComponents.get("scaleText").setBackground(Color.pink);
+                    this.revalidate();
+                }
+
+
+
+
+
+                if (flag) {
+                    if (changeButtonComponents.containsKey("scaleText")) {
+
+                        x = Double.parseDouble(((JTextField) (changeButtonComponents.get("scaleText"))).getText());
+
+                    }
+                }
+
+
+                activeFigure.scale(x);
+
+
+
+                for (JComponent component : changeButtonComponents.values()) {
+                    component.setEnabled(true);
+                    contentPane.remove(component);
+                }
+                changeButtonComponents.clear();
+
+                chooseFigureAvailable = false;
+                this.revalidate();
+                this.repaint();
+            }
+
+        }
     }
 }
+
 

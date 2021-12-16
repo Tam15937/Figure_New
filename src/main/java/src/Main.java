@@ -43,13 +43,11 @@ public class Main extends JFrame {
             figures = initializeStart();
         }
 
-        //для отрисовки графического окна
-        figures = new ArrayList<Figure>();
         Window window = new Window(figures);
 
 
         window.setVisible(true);
-//        menu(figures);
+        menu(figures);
 
 
     }
@@ -204,15 +202,15 @@ public class Main extends JFrame {
     private static ArrayList<Figure> initializeStart() {
 
         ArrayList<Point> trianglePoints = new ArrayList<>();
-        Collections.addAll(trianglePoints, new Point(3, 2), new Point(3, 8), new Point(10, 8));
+        Collections.addAll(trianglePoints, new Point(25, 25), new Point(5, 25), new Point(25, 5));
         Triangle triangle = new Triangle(trianglePoints);
 
         ArrayList<Point> squarePoints = new ArrayList<>();
-        Collections.addAll(squarePoints, new Point(3, 2), new Point(3, 8), new Point(10, 8), new Point(10, 2));
+        Collections.addAll(squarePoints, new Point(5, -5), new Point(25, -5), new Point(25, -25), new Point(5, -25));
         Square square = new Square(squarePoints);
 
         ArrayList<Point> circlePoints = new ArrayList<>();
-        Collections.addAll(circlePoints, new Point(2, 2), new Point(2, 4));
+        Collections.addAll(circlePoints, new Point(-10, -10), new Point(-50, -50));
         Circle circle = new Circle(circlePoints);
 
         ArrayList<Figure> figures = new ArrayList<>();
